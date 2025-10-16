@@ -36,3 +36,8 @@ export interface AppContextType {
   setTheme: React.Dispatch<React.SetStateAction<string>>;
   navigate: (path: string) => void;
 }
+
+export type PublishedImage = {
+    imageUrl: string;
+    userName: string;
+};
