@@ -6,6 +6,7 @@ import ChatBox from './components/ChatBox'
 import Credits from './pages/Credits'
 import Community from './pages/Community'
 import { assets } from './assets/assets'
+import './assets/prism.css'
 
 const App = () => {
 
@@ -20,13 +21,17 @@ const App = () => {
     }
 
       <div className='dark:bg-gradient-to-b from-[#242124] to-[#000000] dark:text-white'>
-        <div className='flex h-screen w-screen'>
+  <div className='flex min-h-screen w-full'>
           <Sidebar isMenuOpen={isMenuOpen} toggleMenu={() => setIsMenuOpen(!isMenuOpen)} />
-          <Routes>
-            <Route path='/' element={<ChatBox />} />
-            <Route path='/credits' element={<Credits />} />
-            <Route path='/community' element={<Community />} />
-          </Routes>
+
+          {/* Main content: shift right when sidebar is visible on larger screens */}
+          <div className={`flex-1 transition-all duration-300 ${isMenuOpen ? 'ml-72' : 'ml-0'}`}>
+            <Routes>
+              <Route path='/' element={<ChatBox />} />
+              <Route path='/credits' element={<Credits />} />
+              <Route path='/community' element={<Community />} />
+            </Routes>
+          </div>
         </div>
       </div>
     </>
