@@ -37,7 +37,15 @@ export interface AppContextType {
   navigate: (path: string) => void;
 }
 
-export type PublishedImage = {
+export interface PublishedImage {
     imageUrl: string;
     userName: string;
 };
+
+export interface Plan {
+    _id: string;
+    name: string;
+    price: number;
+    credits: number;
+    features: string[];
+}
