@@ -15,7 +15,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isMenuOpen, toggleMenu }) => {
   const [search, setSearch] =   useState('');
 
   return (
-    <div className={`flex flex-col h-screen min-w-72 p-5 dark:bg-gradient-to-b from-[#242124]/30 to-[#000000]/30 border-r border-[#88609F]/30 backdrop-blur-3xl transform transition-transform duration-500 absolute left-0 z-10 ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
+    <div className={`flex flex-col top-0 left-0 bottom-0 w-72 p-5 dark:bg-gradient-to-b from-[#242124]/30 to-[#000000]/30 border-r border-[#88609F]/30 backdrop-blur-3xl transform transition-transform duration-500 fixed z-40 ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
       
       {/* Logo */}
       <img src={theme === 'dark' ? assets.logo_full : assets.logo_full_dark} alt="Logo" className='w-full max-w-48'/>
@@ -42,7 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isMenuOpen, toggleMenu }) => {
       
         <div className='flex-1 overflow-y-scroll mt-3 text-sm space-y-3'>
 
-          {chats.length < 0 ? (
+          {chats.length === 0 ? (
             
             <p className='mt-2 text-xs text-gray-400'>No recent chats</p>
 
