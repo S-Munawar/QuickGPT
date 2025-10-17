@@ -1,0 +1,29 @@
+import express from 'express';
+import cors from 'cors';
+import 'dotenv/config';
+import connectDB from './config/db.js';
+import userRouter from './routes/userRoutes.js';
+
+const app = express();
+await connectDB();
+const PORT = process.env.PORT || 3000;
+
+// Middleware
+// Allow Authorization header from the client (so browsers can send Bearer tokens)
+app.use(cors({
+  origin: true,
+  credentials: true,
+  exposedHeaders: ['Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+app.use(express.json());
+
+app.use('/api/user', userRouter);
+
+app.get('/', (req, res) => {
+  res.send('Server is running');
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
