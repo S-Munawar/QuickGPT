@@ -10,7 +10,7 @@ import { stripeWebhook } from './controllers/webhooks.js';
 
 const app = express();
 await connectDB();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 app.post('/api/stripe', express.raw({ type: 'application/json' }), stripeWebhook);
 
