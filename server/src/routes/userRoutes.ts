@@ -8,5 +8,4 @@ userRouter.post('/register', registerUser);
 userRouter.post('/login', loginUser);
 userRouter.get('/data', protect, getUserProfile);
 
-
-export default userRouter
+export default userRouter;

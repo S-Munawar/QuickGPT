@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import User from '../models/user.js';
+import User from '../models/userModel.js';
+import Chat from '../models/chatModel.js';
 
 interface JwtPayloadWithId extends JwtPayload {
     id?: string;
@@ -12,7 +13,7 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
     try {
         if (!token) {
             console.warn('[auth] No Authorization header present');
-            return res.status(401).json({ message: 'Not authorized, token missingg' });
+            return res.status(401).json({ message: 'Not authorized, token missing' });
         }
 
         let decoded: JwtPayloadWithId;

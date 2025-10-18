@@ -5,8 +5,14 @@ import 'express-serve-static-core';
 
 declare module 'express-serve-static-core' {
 	interface Request {
-		user?: any;
+		user: {
+			_id: object;
+			name: string;
+			email: string;
+			password: string;
+		}
 	}
+
 }
 
 // Replace `any` with a concrete user/document type for stricter typing later.
