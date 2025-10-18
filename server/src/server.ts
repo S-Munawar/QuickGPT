@@ -4,6 +4,7 @@ import 'dotenv/config';
 import connectDB from './config/db.js';
 import userRouter from './routes/userRoutes.js';
 import chatRouter from './routes/chatRoutes.js';
+import messageRouter from './routes/messageRoutes.js';
 
 const app = express();
 await connectDB();
@@ -21,6 +22,7 @@ app.use(express.json());
 
 app.use('/api/user', userRouter);
 app.use('/api/chat', chatRouter);
+app.use('/api/message', messageRouter);
 
 app.get('/', (req, res) => {
   res.send('Server is running');
