@@ -1,4 +1,4 @@
-import {createContext, useContext, useEffect, useState} from 'react';
+import {createContext, use, useContext, useEffect, useState} from 'react';
 import type { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { dummyChats, dummyUserData } from '../assets/assets';
@@ -63,9 +63,5 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
     );
 };
 
-export const useAppContext = () => {
-    const ctx = useContext(AppContext);
-    if (!ctx) throw new Error('useAppContext must be used within AppContextProvider');
-    return ctx;
-};
+export const useAppContext = useContext(AppContext)!;
 
