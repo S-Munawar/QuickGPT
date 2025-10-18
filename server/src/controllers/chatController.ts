@@ -54,6 +54,7 @@ export const deleteChat = async (req: Request, res: Response) => {
     try {
         const userId = req.user._id;
         const chatId = req.body.chatId;
+        if(!chatId) return res.status(400).json({ message: "Chat id is required" });
 
         await Chat.findByIdAndDelete({ _id: chatId, userId: userId });
         res.status(200).json({ message: "Chat deleted successfully" });

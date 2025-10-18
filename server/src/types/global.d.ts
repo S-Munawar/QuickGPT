@@ -10,6 +10,7 @@ declare module 'express-serve-static-core' {
 			name: string;
 			email: string;
 			password: string;
+			credits: number;
 		}
 	}
 
