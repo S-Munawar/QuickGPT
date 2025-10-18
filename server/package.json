@@ -23,7 +23,10 @@
     "imagekit": "^6.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.19.1",
-    "openai": "^6.5.0"
+    "openai": "^6.5.0",
+    "razorpay": "^2.9.6",
+    "stripe": "^19.1.0",
+    "svix": "^1.77.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
