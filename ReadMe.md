@@ -2,11 +2,24 @@
 
 <div align="center">
 
-![QuickGPT Logo](https://img.shields.io/badge/QuickGPT-AI%20Platform-purple?style=for-the-badge)
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+<p>
+    <a href="https://quick-gpt-1-six.vercel.app">
+        <img alt="QuickGPT" title="Visit QuickGPT" src="https://img.shields.io/badge/-QuickGPT-6C63FF?style=for-the-badge&logo=openai&logoColor=white"/>
+    </a>
+    <a href="https://www.typescriptlang.org/">
+        <img alt="TypeScript" title="TypeScript" src="https://img.shields.io/badge/-TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white"/>
+    </a>
+    <a href="https://reactjs.org/">
+        <img alt="React" title="React" src="https://img.shields.io/badge/-React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB"/>
+    </a>
+    <a href="https://nodejs.org/">
+        <img alt="Node.js" title="Node.js" src="https://img.shields.io/badge/-Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white"/>
+    </a>
+    <a href="https://www.mongodb.com/">
+        <img alt="MongoDB" title="MongoDB" src="https://img.shields.io/badge/-MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white"/>
+    </a>
+</p>
+
 
 **A modern, full-stack AI chat application with text and image generation capabilities**
 
