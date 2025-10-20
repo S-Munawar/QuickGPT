@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { PublishedImage } from '../types';
 import Loading from './Loading';
 import { useAppContext } from '../context/AppContext';

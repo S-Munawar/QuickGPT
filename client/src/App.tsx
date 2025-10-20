@@ -1,4 +1,3 @@
-import React from 'react'
 import { useState } from 'react';
 import Sidebar from './components/Sidebar'
 import { Route, Routes, useLocation } from 'react-router-dom'

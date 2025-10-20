@@ -1,5 +1,5 @@
 import React  from 'react'
-import { createContext, useContext, useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useAppContext } from '../context/AppContext'
 import { assets } from '../assets/assets';
 import moment from 'moment';
@@ -12,7 +12,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isMenuOpen, toggleMenu }) => {
 
-  const { user, chats, setSelectedChat, theme, setTheme, navigate, createNewChat, axios, setChats, fetchUsersChats, setToken, token } = useAppContext();
+  const { user, chats, setSelectedChat, theme, setTheme, navigate, createNewChat, axios, setChats, fetchUsersChats, setToken } = useAppContext();
   const [search, setSearch] =   useState('');
 
   const logout = () => {
