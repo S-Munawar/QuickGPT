@@ -22,8 +22,8 @@ const Login = () => {
     // Absolute backend URL
     const url =
       state === "login"
-        ? "http://localhost:3000/api/user/login"
-        : "http://localhost:3000/api/user/register";
+        ? "/api/user/login"
+        : "/api/user/register";
 
     // Send only relevant fields
     const payload =
