@@ -1,18 +1,40 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import {useState} from 'react'
-import { dummyPlans } from '../assets/assets';
 import Loading from './Loading';
 import type { Plan } from '../types';
+import { useAppContext } from '../context/AppContext';
+import toast from 'react-hot-toast';
 
 const Credits = () => {
 
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
+  const {token, axios} = useAppContext();
 
   const fetchPlans = async () => {
-    setLoading(true);
-    setPlans(dummyPlans);
-    setLoading(false);
+    try{
+      const {data} = await axios.get('/api/credits/plans', { headers: { Authorization: token } });
+      if (data.success) setPlans(data.plans);
+      else {
+        toast.error('Failed to fetch credit plans',  data.message);
+      }
+    }
+    catch (error) {
+      toast.error(`Error fetching credit plans: ${String(error)}`);
+    }
+      setLoading(false);
+  }
+
+  const purchasePlan = async (planId: string) => {
+    
+    try{
+      const {data} = await axios.post('/api/credits/purchase', { planId }, { headers: { Authorization: token } });
+      if (data.success) window.location.href = data.url;
+      else toast.error('Failed to initiate purchase', data.message);
+    }
+    catch (error) {
+      toast.error(`Error purchasing plan: ${String(error)}`);
+    }
   }
 
   useEffect(() => {
@@ -40,7 +62,9 @@ const Credits = () => {
                   ))}
                 </ul>
               </div>
-              <button className='mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded transition-colors'>
+              <button onClick={() => toast.promise(purchasePlan(plan._id), {
+                loading: 'Processing...',
+              })} className='mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded transition-colors'>
                 Purchase
               </button>
           </div>

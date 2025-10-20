@@ -51,7 +51,7 @@ export const dummyUserData = {
     "email": "admin@example.com",
     "password": "$2b$10$VESVdPDjL5LF.KCU6jKyqeXNSLASAAfpR2kkIJExtMO.PJvZJAudy",
     "credits": 200,
-}
+};
 
 // copy for server controllers
 export const dummyPlans = [
@@ -72,12 +72,11 @@ export const dummyPlans = [
     {
         _id: "premium",
         name: "Premium",
-        price: 30,
+        price: 25,
         credits: 1000,
         features: ['1000 text generations', '500 image generations', '24/7 VIP support', 'Access to premium models', 'Dedicated account manager']
     }
 ];
-
 
 export const dummyChats = [
     {

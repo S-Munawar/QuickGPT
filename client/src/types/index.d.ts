@@ -35,6 +35,13 @@ export interface AppContextType {
   theme: string;
   setTheme: React.Dispatch<React.SetStateAction<string>>;
   navigate: (path: string) => void;
+  token: string | null;
+  setToken: React.Dispatch<React.SetStateAction<string | null>>;
+  loadingUser: boolean;
+  createNewChat: () => Promise<void>;
+  fetchUsersChats: () => Promise<void>;
+  axios: any;
+  fetchUser: () => Promise<void>;
 }
 
 export interface PublishedImage {

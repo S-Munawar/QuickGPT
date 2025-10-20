@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { useAppContext } from '../context/AppContext'
 import { assets } from '../assets/assets';
 import moment from 'moment';
+import toast from 'react-hot-toast';
 
 interface SidebarProps {
   isMenuOpen: boolean;
@@ -11,8 +12,30 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isMenuOpen, toggleMenu }) => {
 
-  const { user, chats, setSelectedChat, theme, setTheme, navigate } = useAppContext();
+  const { user, chats, setSelectedChat, theme, setTheme, navigate, createNewChat, axios, setChats, fetchUsersChats, setToken, token } = useAppContext();
   const [search, setSearch] =   useState('');
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    setToken(null);
+    navigate('/login');
+    toast.success('Logged out successfully');
+  }
+
+  const handleDeleteChat = async (chatId: string) => {
+    try {
+      const confirm = window.confirm('Are you sure you want to delete this chat?');
+      if (!confirm) return;
+      const {data} = await axios.delete(`/api/chat/delete`, { data: { chatId }, headers: { Authorization: localStorage.getItem('token') } });
+      if (data.success) {
+        setChats(chats.filter(chat => chat._id !== chatId));
+        fetchUsersChats();
+        toast.success(data.message);
+      }
+    } catch (error) {
+      toast.error('Failed to delete chat');
+    }
+  }
 
   return (
     <div className={`flex flex-col top-0 left-0 bottom-0 w-72 p-5 dark:bg-gradient-to-b from-[#242124]/30 to-[#000000]/30 border-r border-[#88609F]/30 backdrop-blur-3xl transform transition-transform duration-500 fixed z-40 ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
@@ -21,7 +44,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isMenuOpen, toggleMenu }) => {
       <img src={theme === 'dark' ? assets.logo_full : assets.logo_full_dark} alt="Logo" className='w-full max-w-48'/>
 
       {/* New Chat Button */}
-      <button className='flex justify-center items-center w-full py-2 mt-10 text-white bg-gradient-to-r from-[#A456F7] to-[#3D81F6] text-sm rounded-md cursor-pointer' >
+      <button onClick={createNewChat} className='flex justify-center items-center w-full py-2 mt-10 text-white bg-gradient-to-r from-[#A456F7] to-[#3D81F6] text-sm rounded-md cursor-pointer' >
         <span className='mr-2 text-xl'>+</span> New Chat
       </button>
 
@@ -53,13 +76,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isMenuOpen, toggleMenu }) => {
               <div onClick={() => {navigate('/'); setSelectedChat(chat); toggleMenu()}} key={chat._id} className='p-2 px-4 dark:bg-[#57317C]/10 border border-gray-300 dark:border-[#80609F]/15 rounded-md cursor-pointer flex justify-between group'>
                 <div>
                   <p className='truncate w-full'>
-                    {chat.messages.length > 0 ? chat.messages[0].content.slice(0,32) : chat.name}
+                    {chat.messages.length > 0 ? chat.messages[0].content.slice(0,32) : chat.name? chat.name : 'New Chat'}
                   </p>
                   <p className='text-xs text-gray-500 dark:text-[#B1A6C0]'>
                     {moment(chat.updatedAt).fromNow()}
                   </p>
                 </div>
-                <img src={assets.bin_icon} alt="Delete" className='hidden group-hover:block w-4 cursor-pointer not-dark:invert' />
+                <img onClick={(e) => {e.stopPropagation(); toast.promise(handleDeleteChat(chat._id as string), {
+                  loading: 'Deleting chat...'
+                }); }} src={assets.bin_icon} alt="Delete" className='hidden group-hover:block w-4 cursor-pointer not-dark:invert' />
               </div>
             ))
 
@@ -108,11 +133,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isMenuOpen, toggleMenu }) => {
       </div>
 
       {/* User Account */}
-
       <div className='flex items-center gap-3 p-3 mt-4 border border-gray-300 dark:border-white/15 rounded-md cursor-pointer group'>
         <img src={assets.user_icon} alt="User" className='w-7 rounded-full' />
         <p className='flex-1 text-sm dark:text-primary truncate'>{user ? user.name : "Login"}</p>
-        {user && <img src={assets.logout_icon} alt="logout" className='h-5 cursor-pointer hidden not-dark:invert group-hover:block' />}
+        {user && <img onClick={logout} src={assets.logout_icon} alt="logout" className='h-5 cursor-pointer hidden not-dark:invert group-hover:block' />}
       </div>
 
       <img 

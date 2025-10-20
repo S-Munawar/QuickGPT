@@ -7,12 +7,25 @@ import chatRouter from './routes/chatRoutes.js';
 import messageRouter from './routes/messageRoutes.js';
 import creditsRoutes from './routes/creditsRoutes.js';
 import { stripeWebhook } from './controllers/webhooks.js';
+import bodyParser from 'body-parser';
 
 const app = express();
 await connectDB();
-const PORT = process.env.PORT;
+// Stripe webhook route first
+app.post(
+  '/api/stripe/webhook',
+  express.raw({ type: 'application/json' }),
+  stripeWebhook
+);
 
-app.post('/api/stripe', express.raw({ type: 'application/json' }), stripeWebhook);
+// Then all other JSON middleware and routes
+app.use(express.json());
+app.use(cors({
+  origin: true,
+  credentials: true,
+  exposedHeaders: ['Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 // Middleware
 // Allow Authorization header from the client (so browsers can send Bearer tokens)
@@ -22,7 +35,6 @@ app.use(cors({
   exposedHeaders: ['Authorization'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
-app.use(express.json());
 
 app.use('/api/user', userRouter);
 app.use('/api/chat', chatRouter);
@@ -34,6 +46,7 @@ app.get('/', (req, res) => {
   res.send('Server is running');
 });
 
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

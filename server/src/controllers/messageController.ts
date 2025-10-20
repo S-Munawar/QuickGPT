@@ -31,11 +31,19 @@ export const sendMessage = async (req: Request, res: Response) => {
 
         const reply = { ...choices[0].message, timestamp: Date.now(), isImage: false };
 
-        res.status(200).json({ message: "Message sent successfully", reply });
+        res.status(200).json({ success: true, message: "Message sent successfully", reply });
 
-        chat.messages.push({ reply, timestamp: Date.now(), isImage: false });
+        // ✅ Fix: push the reply correctly
+        chat.messages.push({ 
+        role: reply.role, 
+        content: reply.content, 
+        timestamp: reply.timestamp, 
+        isImage: false 
+        });
+
         await chat.save();
         await User.updateOne({ _id: userId }, { $inc: { credits: -1 } });
+
 
     } catch (error) {
         console.error("Error sending message:", error);
@@ -46,52 +54,67 @@ export const sendMessage = async (req: Request, res: Response) => {
 // Image based AI chat controller functions
 
 export const sendImageMessage = async (req: Request, res: Response) => {
-    try {
-        const userId = req.user._id;
-        const { chatId, prompt } = req.body;
-        if (req.user.credits < 2) return res.status(403).json({ message: "Insufficient credits for image generation" });
-        const chat = await Chat.findOne({ _id: chatId, userId: userId });
-        if (!chat) return res.status(404).json({ message: "Chat not found" });
-        chat.messages.push({ role: "user", content: prompt, timestamp: Date.now(), isImage: true, isPublished: req.body.isPublished });
+  try {
+    const userId = req.user._id;
+    const { chatId, prompt, isPublished } = req.body;
 
-        // Encode prompt to handle special characters for URL
-        const encodedPrompt = encodeURIComponent(prompt);
+    if (req.user.credits < 2)
+      return res.status(403).json({ message: "Insufficient credits for image generation" });
 
-        // Construct ImageKit AI generation URL
-        const generatedImageUrl = `${process.env.IMAGEKIT_URL_ENDPOINT}/ik-genimg-prompt-${encodedPrompt}/QuickGPT/${Date.now()}.png?tr:w-800,h-800`;
+    const chat = await Chat.findOne({ _id: chatId, userId });
+    if (!chat) return res.status(404).json({ message: "Chat not found" });
 
-        // Trigger generation by fetching from ImageKit
-        const aiImageResponse = await axios.get(generatedImageUrl, { responseType: 'arraybuffer' }); // Fetch the image to ensure it's generated
+    // Add user's prompt message
+    chat.messages.push({
+      role: "user",
+      content: prompt,
+      timestamp: Date.now(),
+      isImage: true,
+      isPublished
+    });
 
-        // Convert to base64
-        const base64Image = `data:image/png;base64,${Buffer.from(aiImageResponse.data, 'binary').toString('base64')}`;
+    const encodedPrompt = encodeURIComponent(prompt);
+    const generatedImageUrl = `${process.env.IMAGEKIT_URL_ENDPOINT}/ik-genimg-prompt-${encodedPrompt}/QuickGPT/${Date.now()}.png?tr:w-800,h-800`;
 
-        // Upload generated image to ImageKit library, so that we can get a live URL
-        const uploadResponse = await imagekit.upload({
-            file: base64Image,
-            fileName: `${Date.now()}.png`,
-            folder: 'QuickGPT',
-        });
+    // Fetch generated image to ensure it’s ready
+    const aiImageResponse = await axios.get(generatedImageUrl, { responseType: "arraybuffer" });
+    const base64Image = `data:image/png;base64,${Buffer.from(aiImageResponse.data, "binary").toString("base64")}`;
 
-        // Store the image message in in reply
-        const reply = {
-            role: "assistant",
-            content: uploadResponse.url,
-            timestamp: Date.now(),
-            isImage: true,
-            isPublished: req.body.isPublished,
-        }
-        res.status(200).json({ message: "Image message sent successfully", reply });
-        chat.messages.push(reply); // Reply is pushed as message
-        await chat.save(); // Save chat with new message
-        await User.updateOne({ _id: userId }, { $inc: { credits: -2 } }); // Deduct 2 credits for image generation
+    // Upload the generated image to ImageKit
+    const uploadResponse = await imagekit.upload({
+      file: base64Image,
+      fileName: `${Date.now()}.png`,
+      folder: "QuickGPT",
+    });
 
-    } catch (error) {
+    // Prepare assistant reply
+    const reply = {
+      role: "assistant",
+      content: uploadResponse.url,
+      timestamp: Date.now(),
+      isImage: true,
+      isPublished,
+    };
 
-        console.error("Error sending image message:", error);
-        res.status(500).json({ message: "Server error" });
-    }
+    // Push reply to chat and save before responding
+    chat.messages.push(reply);
+    await chat.save();
+
+    // Deduct credits
+    await User.updateOne({ _id: userId }, { $inc: { credits: -2 } });
+
+    // Respond *after* everything is saved
+    return res.status(200).json({
+      success: true,
+      message: "Image message sent successfully",
+      reply,
+    });
+  } catch (error) {
+    console.error("Error sending image message:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
 };
+
 
 // API to get published image messages
 
@@ -100,9 +123,9 @@ export const getPublishedImages = async (req: Request, res: Response) => {
         const PublishedImages = await Chat.aggregate([
             { $unwind: "$messages" },
             { $match: { "messages.isImage": true, "messages.isPublished": true} },
-            { $project: { _id: 0, imageUrl: "$messages.content", prompt: "$messages.prompt", timestamp: "$messages.timestamp" } },
+            { $project: { _id: 0, imageUrl: "$messages.content", userName: "$userName", prompt: "$messages.prompt", timestamp: "$messages.timestamp" } },
         ]);
-        res.status(200).json({ images: PublishedImages });
+        res.status(200).json({success: true, images: PublishedImages });
     }
     catch (error) {
         console.error("Error fetching published images:", error);
