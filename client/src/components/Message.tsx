@@ -4,6 +4,7 @@ import { assets } from '../assets/assets'
 import moment from 'moment'
 import Markdown from 'react-markdown'
 import Prism from 'prismjs'
+import { Link } from 'react-router'
 
 const MessageComponent = ({message}: {message: Message}) => {
 
@@ -26,7 +27,9 @@ const MessageComponent = ({message}: {message: Message}) => {
       ) : (
         <div className='inline-flex flex-col gap-2 p-2 px-4 max-w-2xl bg-primary/20 dark:bg-[#57317C]/30 border border-[#80609F]/30 rounded-md my-4'>
           {message.isImage ? (
-            <img src={message.content} alt="Generated" className='w-full max-w-md mt-2 rounded-md' />
+            <Link to={message.content}>
+              <img src={message.content} alt="Generated" className='w-full max-w-md mt-2 rounded-md' />
+            </Link> 
           ) : (
             <div className='text-sm dark:text-primary reset-tw'>
               <Markdown>{message.content}</Markdown>

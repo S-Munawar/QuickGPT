@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react'
 import type { PublishedImage } from '../types';
 import Loading from './Loading';
 import { useAppContext } from '../context/AppContext';
-import { toast } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 
 const Community = () => {
 
   const [images, setImages] = useState<PublishedImage[]>([]);
   const [loading, setLoading] = useState(false);
-  const {axios, } = useAppContext();
+  const {axios} = useAppContext();
 
   const fetchImages = async () => {
     setLoading(true);
@@ -22,14 +22,15 @@ const Community = () => {
     catch(error){
       toast.error(`Error fetching images: ${String(error)}`);
     }
-    setLoading(false);
+    finally{
+      setLoading(false);
+    }
   }
   useEffect(() => {
     fetchImages();
   }, []);
 
   if (loading) return <Loading />;
-
 
   return (
     <div className='p-6 pt-12 xl:px-12 2xl:px-20 w-full mx-auto h-full overflow-y-scroll ' >

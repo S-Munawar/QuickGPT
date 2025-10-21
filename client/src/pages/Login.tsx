@@ -1,9 +1,12 @@
 import React from "react";
 import { useAppContext } from "../context/AppContext";
+import toast from "react-hot-toast";
+import Loading from "./Loading";
 
 const Login = () => {
   const [state, setState] = React.useState<"login" | "register">("login");
   const { axios, setToken, navigate } = useAppContext();
+  const [loading, setLoading] = React.useState(false);
 
   const [formData, setFormData] = React.useState({
     name: "",
@@ -19,6 +22,7 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    setLoading(true)
     // Absolute backend URL
     const url =
       state === "login"
@@ -40,14 +44,20 @@ const Login = () => {
         setToken(response.data.token);
         localStorage.setItem("token", response.data.token);
         navigate("/"); // Adjust route as needed
+        toast.success(response.data.message);
       } else {
-        alert(response.data.message);
+        toast.error(response.data.message);
       }
     } catch (error: any) {
       console.error(error);
-      alert(error.response?.data?.message || "Something went wrong");
+      toast.error(error.response?.data?.message || "Something went wrong");
+    }
+    finally{
+      setLoading(false);
     }
   };
+
+  if (loading) return <Loading />
 
   return (
     <form

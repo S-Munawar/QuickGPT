@@ -17,7 +17,7 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
     const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
     const [theme, setTheme] = useState<string>(localStorage.getItem('theme') || 'dark');
     const [token, setToken] = useState<string | null>(localStorage.getItem('token')); // Assuming token is stored in localStorage
-    const [loadingUser, setLoadingUser] = useState<boolean>(true);
+    const [loadingUser, setLoadingUser] = useState<boolean>(true); // Loading state for user data
     
     // Function to fetch user data from server using the token
     const fetchUser = async () => {
