@@ -412,7 +412,7 @@ QuickGPT/
 
 ---
 
-## 🖼️ Screenshots
+<!-- ## 🖼️ Screenshots
 
 ### Chat Interface
 ![Chat Interface](https://via.placeholder.com/800x400?text=Chat+Interface+Screenshot)
@@ -426,7 +426,7 @@ QuickGPT/
 ### Community Gallery
 ![Community Gallery](https://via.placeholder.com/800x400?text=Community+Gallery+Screenshot)
 
----
+--- -->
 
 ## 🤝 Contributing
 
@@ -478,19 +478,13 @@ Contributions are welcome! Please follow these steps:
 
 ---
 
-## 📄 License
-
-This project is licensed under the **ISC License**.
-
----
-
 ## 📞 Contact
 
 **Shaik Abdul Munawar**
 
 - 💼 LinkedIn: [www.linkedin.com/in/shaik-abdul-munawar-b35821284](https://www.linkedin.com/in/shaik-abdul-munawar-b35821284)
 - 🐱 GitHub: [@S-Munawar](https://github.com/S-Munawar)
-- 📧 Email: [Your Email] (optional)
+- 📧 Email: shaikmunawar907@gmail.com
 
 ---
 

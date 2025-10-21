@@ -64,6 +64,22 @@ export const sendImageMessage = async (req: Request, res: Response) => {
     const chat = await Chat.findOne({ _id: chatId, userId });
     if (!chat) return res.status(404).json({ message: "Chat not found" });
 
+    // Validate prompt before processing
+    if (!prompt || prompt.trim().length === 0) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Prompt cannot be empty" 
+      });
+    }
+
+    // Limit prompt length to prevent issues
+    if (prompt.length > 1000) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Prompt is too long. Please keep it under 1000 characters." 
+      });
+    }
+
     // Add user's prompt message
     chat.messages.push({
       role: "user",
@@ -74,18 +90,64 @@ export const sendImageMessage = async (req: Request, res: Response) => {
     });
 
     const encodedPrompt = encodeURIComponent(prompt);
-    const generatedImageUrl = `${process.env.IMAGEKIT_URL_ENDPOINT}/ik-genimg-prompt-${encodedPrompt}/QuickGPT/${Date.now()}.png?tr:w-800,h-800`;
+    const generatedImageUrl = `${process.env.IMAGEKIT_URL_ENDPOINT}/ik-genimg-prompt-${encodedPrompt}/QuickGPT/${Date.now()}.png?tr=w-800,h-800`;
 
-    // Fetch generated image to ensure it’s ready
-    const aiImageResponse = await axios.get(generatedImageUrl, { responseType: "arraybuffer" });
+    // Fetch generated image to ensure it's ready
+    let aiImageResponse;
+    try {
+      aiImageResponse = await axios.get(generatedImageUrl, { 
+        responseType: "arraybuffer",
+        timeout: 30000, // 30 second timeout
+        validateStatus: (status) => status === 200 // Only accept 200 status
+      });
+
+      // Validate that we actually got image data
+      if (!aiImageResponse.data || aiImageResponse.data.length === 0) {
+        throw new Error("Received empty image data from ImageKit");
+      }
+
+      // Check if response is actually an image
+      const contentType = aiImageResponse.headers['content-type'];
+      if (!contentType || !contentType.startsWith('image/')) {
+        throw new Error(`Invalid content type: ${contentType}. Expected an image.`);
+      }
+
+    } catch (imageError: any) {
+      console.error("Error fetching generated image from ImageKit:", imageError.message);
+      
+      // Return a user-friendly error
+      return res.status(500).json({ 
+        success: false, 
+        message: "Failed to generate image. Please try again with a different prompt.",
+        error: imageError.message 
+      });
+    }
+
     const base64Image = `data:image/png;base64,${Buffer.from(aiImageResponse.data, "binary").toString("base64")}`;
 
-    // Upload the generated image to ImageKit
-    const uploadResponse = await imagekit.upload({
-      file: base64Image,
-      fileName: `${Date.now()}.png`,
-      folder: "QuickGPT",
-    });
+    // Upload the generated image to ImageKit with error handling
+    let uploadResponse;
+    try {
+      uploadResponse = await imagekit.upload({
+        file: base64Image,
+        fileName: `${Date.now()}.png`,
+        folder: "QuickGPT",
+      });
+
+      // Validate upload response
+      if (!uploadResponse || !uploadResponse.url) {
+        throw new Error("ImageKit upload failed - no URL returned");
+      }
+
+    } catch (uploadError: any) {
+      console.error("Error uploading image to ImageKit:", uploadError.message);
+      
+      return res.status(500).json({ 
+        success: false, 
+        message: "Failed to save generated image. Please try again.",
+        error: uploadError.message 
+      });
+    }
 
     // Prepare assistant reply
     const reply = {
