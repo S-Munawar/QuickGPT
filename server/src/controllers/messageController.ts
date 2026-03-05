@@ -1,9 +1,9 @@
-import {openai} from '../config/openai.js';
+import { openai } from '../config/openai.js';
 import Chat from '../models/chatModel.js';
 import { Request, Response } from 'express';
 import User from '../models/userModel.js';
 import axios from 'axios';
-import imagekit  from '../config/imagekit.js';
+import imagekit from '../config/imagekit.js';
 
 
 // Text based AI chat controller functions
@@ -11,44 +11,44 @@ import imagekit  from '../config/imagekit.js';
 export const sendMessage = async (req: Request, res: Response) => {
 
 
-    try {
-        const userId = req.user._id;
-        const { chatId, prompt } = req.body;
-        if (req.user.credits < 1) return res.status(403).json({ message: "Insufficient credits for image generation" });
-        const chat = await Chat.findOne({ _id: chatId, userId: userId });
-        if (!chat) return res.status(404).json({ message: "Chat not found" });
-        chat.messages.push({ role: "user", content: prompt, timestamp: Date.now(), isImage: false });
+  try {
+    const userId = req.user._id;
+    const { chatId, prompt } = req.body;
+    if (req.user.credits < 1) return res.status(403).json({ message: "Insufficient credits for image generation" });
+    const chat = await Chat.findOne({ _id: chatId, userId: userId });
+    if (!chat) return res.status(404).json({ message: "Chat not found" });
+    chat.messages.push({ role: "user", content: prompt, timestamp: Date.now(), isImage: false });
 
-        const {choices} = await openai.chat.completions.create({
-            model: "gemini-2.0-flash",
-            messages: [
-                {
-                    role: "user",
-                    content: prompt,
-                },
-            ],
-        });
+    const { choices } = await openai.chat.completions.create({
+      model: "gemini-2.5-flash",
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+    });
 
-        const reply = { ...choices[0].message, timestamp: Date.now(), isImage: false };
+    const reply = { ...choices[0].message, timestamp: Date.now(), isImage: false };
 
-        res.status(200).json({ success: true, message: "Message sent successfully", reply });
+    res.status(200).json({ success: true, message: "Message sent successfully", reply });
 
-        // ✅ Fix: push the reply correctly
-        chat.messages.push({ 
-        role: reply.role, 
-        content: reply.content, 
-        timestamp: reply.timestamp, 
-        isImage: false 
-        });
+    // ✅ Fix: push the reply correctly
+    chat.messages.push({
+      role: reply.role,
+      content: reply.content,
+      timestamp: reply.timestamp,
+      isImage: false
+    });
 
-        await chat.save();
-        await User.updateOne({ _id: userId }, { $inc: { credits: -1 } });
+    await chat.save();
+    await User.updateOne({ _id: userId }, { $inc: { credits: -1 } });
 
 
-    } catch (error) {
-        console.error("Error sending message:", error);
-        res.status(500).json({ message: "Server error" });
-    }
+  } catch (error) {
+    console.error("Error sending message:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 // Image based AI chat controller functions
@@ -66,17 +66,17 @@ export const sendImageMessage = async (req: Request, res: Response) => {
 
     // Validate prompt before processing
     if (!prompt || prompt.trim().length === 0) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Prompt cannot be empty" 
+      return res.status(400).json({
+        success: false,
+        message: "Prompt cannot be empty"
       });
     }
 
     // Limit prompt length to prevent issues
     if (prompt.length > 1000) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Prompt is too long. Please keep it under 1000 characters." 
+      return res.status(400).json({
+        success: false,
+        message: "Prompt is too long. Please keep it under 1000 characters."
       });
     }
 
@@ -95,7 +95,7 @@ export const sendImageMessage = async (req: Request, res: Response) => {
     // Fetch generated image to ensure it's ready
     let aiImageResponse;
     try {
-      aiImageResponse = await axios.get(generatedImageUrl, { 
+      aiImageResponse = await axios.get(generatedImageUrl, {
         responseType: "arraybuffer",
         timeout: 30000, // 30 second timeout
         validateStatus: (status) => status === 200 // Only accept 200 status
@@ -114,12 +114,12 @@ export const sendImageMessage = async (req: Request, res: Response) => {
 
     } catch (imageError: any) {
       console.error("Error fetching generated image from ImageKit:", imageError.message);
-      
+
       // Return a user-friendly error
-      return res.status(500).json({ 
-        success: false, 
+      return res.status(500).json({
+        success: false,
         message: "Failed to generate image. Please try again with a different prompt.",
-        error: imageError.message 
+        error: imageError.message
       });
     }
 
@@ -141,11 +141,11 @@ export const sendImageMessage = async (req: Request, res: Response) => {
 
     } catch (uploadError: any) {
       console.error("Error uploading image to ImageKit:", uploadError.message);
-      
-      return res.status(500).json({ 
-        success: false, 
+
+      return res.status(500).json({
+        success: false,
         message: "Failed to save generated image. Please try again.",
-        error: uploadError.message 
+        error: uploadError.message
       });
     }
 
@@ -181,16 +181,16 @@ export const sendImageMessage = async (req: Request, res: Response) => {
 // API to get published image messages
 
 export const getPublishedImages = async (req: Request, res: Response) => {
-    try {
-        const PublishedImages = await Chat.aggregate([
-            { $unwind: "$messages" },
-            { $match: { "messages.isImage": true, "messages.isPublished": true} },
-            { $project: { _id: 0, imageUrl: "$messages.content", userName: "$userName", prompt: "$messages.prompt", timestamp: "$messages.timestamp" } },
-        ]);
-        res.status(200).json({success: true, images: PublishedImages });
-    }
-    catch (error) {
-        console.error("Error fetching published images:", error);
-        res.status(500).json({ message: "Server error" });
-    }
+  try {
+    const PublishedImages = await Chat.aggregate([
+      { $unwind: "$messages" },
+      { $match: { "messages.isImage": true, "messages.isPublished": true } },
+      { $project: { _id: 0, imageUrl: "$messages.content", userName: "$userName", prompt: "$messages.prompt", timestamp: "$messages.timestamp" } },
+    ]);
+    res.status(200).json({ success: true, images: PublishedImages });
+  }
+  catch (error) {
+    console.error("Error fetching published images:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
