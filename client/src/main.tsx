@@ -3,11 +3,15 @@ import './index.css'
 import App from './App.tsx'
 import { BrowserRouter } from 'react-router-dom'
 import { AppContextProvider } from './context/AppContext.tsx'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 
 createRoot(document.getElementById('root')!).render(
+  <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ''}>
     <BrowserRouter>
-    <AppContextProvider>
-      <App />
-    </AppContextProvider>
+      <AppContextProvider>
+        <App />
+      </AppContextProvider>
     </BrowserRouter>
+  </GoogleOAuthProvider>
 )
+

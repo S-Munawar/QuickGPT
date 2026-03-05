@@ -3,6 +3,7 @@ export interface User {
   name: string;
   email: string;
   password?: string;
+  googleId?: string;
   credits?: number;
 }
 
@@ -40,19 +41,20 @@ export interface AppContextType {
   loadingUser: boolean;
   createNewChat: () => Promise<void>;
   fetchUsersChats: () => Promise<void>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   axios: any;
   fetchUser: () => Promise<void>;
 }
 
 export interface PublishedImage {
-    imageUrl: string;
-    userName: string;
+  imageUrl: string;
+  userName: string;
 };
 
 export interface Plan {
-    _id: string;
-    name: string;
-    price: number;
-    credits: number;
-    features: string[];
+  _id: string;
+  name: string;
+  price: number;
+  credits: number;
+  features: string[];
 }

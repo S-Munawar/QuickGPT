@@ -9,7 +9,8 @@ declare module 'express-serve-static-core' {
 			_id: object;
 			name: string;
 			email: string;
-			password: string;
+			password?: string | null;
+			googleId?: string | null;
 			credits: number;
 		}
 	}

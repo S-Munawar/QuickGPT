@@ -2,6 +2,7 @@ import React from "react";
 import { useAppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
 import Loading from "./Loading";
+import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
 
 const Login = () => {
   const [state, setState] = React.useState<"login" | "register">("login");
@@ -48,11 +49,36 @@ const Login = () => {
       } else {
         toast.error(response.data.message);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
       console.error(error);
-      toast.error(error.response?.data?.message || "Something went wrong");
+      toast.error(err.response?.data?.message || "Something went wrong");
     }
-    finally{
+    finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    setLoading(true);
+    try {
+      const response = await axios.post("/api/user/google", {
+        credential: credentialResponse.credential,
+      });
+
+      if (response.data.success) {
+        setToken(response.data.token);
+        localStorage.setItem("token", response.data.token);
+        navigate("/");
+        toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      console.error(error);
+      toast.error(err.response?.data?.message || "Google sign-in failed");
+    } finally {
       setLoading(false);
     }
   };
@@ -124,6 +150,25 @@ const Login = () => {
         {state === "login" ? "Login" : "Sign up"}
       </button>
 
+      {/* Divider */}
+      <div className="flex items-center my-4 gap-3">
+        <div className="flex-1 h-px bg-gray-300"></div>
+        <span className="text-gray-400 text-sm">or</span>
+        <div className="flex-1 h-px bg-gray-300"></div>
+      </div>
+
+      {/* Google Sign-In */}
+      <div className="flex justify-center">
+        <GoogleLogin
+          onSuccess={handleGoogleSuccess}
+          onError={() => toast.error("Google sign-in failed")}
+          shape="pill"
+          size="large"
+          width="100%"
+          text={state === "login" ? "signin_with" : "signup_with"}
+        />
+      </div>
+
       <p
         onClick={() =>
           setState((prev) => (prev === "login" ? "register" : "login"))
@@ -140,3 +185,4 @@ const Login = () => {
 };
 
 export default Login;
+

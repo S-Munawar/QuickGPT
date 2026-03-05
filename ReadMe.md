@@ -23,7 +23,7 @@
 
 **A modern, full-stack AI chat application with text and image generation capabilities**
 
-[Features](#-features) • [Tech Stack](#-tech-stack) • [Installation](#-installation) • [Usage](#-usage) • [API Documentation](#-api-documentation) • [Contributing](#-contributing)
+[Features](#-features) • [Tech Stack](#-tech-stack) • [Installation](#-installation) • [Usage](#-usage) • [API Documentation](#-api-documentation)
 
 </div>
 
@@ -40,80 +40,84 @@
 - [Usage](#-usage)
 - [API Documentation](#-api-documentation)
 - [Project Structure](#-project-structure)
-- [Screenshots](#-screenshots)
 - [Contributing](#-contributing)
-- [License](#-license)
 - [Contact](#-contact)
 
 ---
 
 ## 🌟 Overview
 
-**QuickGPT** is a cutting-edge AI platform that combines the power of OpenAI's GPT models with image generation capabilities. Built with modern web technologies, it offers a seamless chat experience with support for both text conversations and AI-generated images. The platform includes a credit-based system with Stripe payment integration and a community feature to share AI-generated content.
+**QuickGPT** is a full-stack AI platform that combines text chat and image generation capabilities. It uses Google's Gemini model (via the OpenAI SDK) for text conversations and ImageKit's AI image generation for creating images. The platform includes a credit-based system with Stripe payment integration and a community feature to share AI-generated images.
 
 ---
 
 ## ✨ Features
 
 ### 🤖 AI Capabilities
-- **Text Generation**: Powered by OpenAI's GPT models for intelligent conversations
-- **Image Generation**: Create stunning AI-generated images using DALL-E
+- **Text Generation**: Powered by Google's Gemini 2.0 Flash model (via OpenAI-compatible SDK)
+- **Image Generation**: AI-generated images using ImageKit's generative image API
 - **Markdown Support**: Rich text formatting with syntax highlighting (Prism.js)
 - **Real-time Responses**: Instant AI responses with loading indicators
 
 ### 💳 Payment & Credits
 - **Stripe Integration**: Secure payment processing for credit purchases
-- **Multiple Plans**: Basic, Pro, and Premium credit packages
-- **Webhook Support**: Automated credit allocation after payment
-- **Transaction History**: Track all purchases and credit usage
+- **Multiple Plans**: Basic ($10 / 100 credits), Pro ($20 / 500 credits), and Premium ($25 / 1000 credits)
+- **Webhook Support**: Automated credit allocation after successful payment
+- **Credit Costs**: Text generation costs 1 credit, image generation costs 2 credits
+- **Free Starter Credits**: New users receive 20 credits on sign-up
 
 ### 🎨 User Experience
-- **Dark/Light Mode**: Seamless theme switching
-- **Responsive Design**: Works flawlessly on desktop, tablet, and mobile
-- **Community Gallery**: Share and discover AI-generated images
-- **Chat Management**: Create, view, and manage multiple chat sessions
-- **User Authentication**: Secure JWT-based authentication system
+- **Dark/Light Mode**: Seamless theme switching with persistent preference
+- **Responsive Design**: Works on desktop, tablet, and mobile
+- **Community Gallery**: Share and discover AI-generated images from other users
+- **Chat Management**: Create, view, and delete multiple chat sessions
+- **Google Sign-In**: One-click authentication with Google OAuth 2.0
+- **User Authentication**: Secure JWT-based authentication (email/password or Google)
+- **Toast Notifications**: Real-time feedback via React Hot Toast
 
 ### 🔒 Security & Performance
-- **Secure Authentication**: BCrypt password hashing
+- **Secure Authentication**: BCrypt password hashing with JWT tokens + Google OAuth
 - **Protected Routes**: Middleware-based route protection
 - **Environment Variables**: Secure configuration management
-- **Error Handling**: Comprehensive error handling with toast notifications
+- **CORS Configuration**: Properly configured cross-origin resource sharing
 
 ---
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **React 18.3** - UI library
-- **TypeScript** - Type-safe JavaScript
-- **Vite** - Lightning-fast build tool
-- **TailwindCSS 4.1** - Utility-first CSS framework
-- **React Router 7.9** - Client-side routing
-- **Axios** - HTTP client
-- **React Hot Toast** - Toast notifications
-- **React Markdown** - Markdown rendering
-- **Prism.js** - Syntax highlighting
-- **Moment.js** - Date formatting
+- **React 18.3** — UI library
+- **TypeScript** — Type-safe JavaScript
+- **Vite 7** — Lightning-fast build tool
+- **TailwindCSS 4** (with `@tailwindcss/vite` plugin) — Utility-first CSS framework
+- **React Router 7** — Client-side routing
+- **Axios** — HTTP client
+- **React Hot Toast** — Toast notifications
+- **React Markdown** — Markdown rendering
+- **Prism.js** — Syntax highlighting
+- **Moment.js** — Date formatting
+- **@react-oauth/google** — Google Sign-In integration
 
 ### Backend
-- **Node.js** - JavaScript runtime
-- **Express 5.1** - Web framework
-- **TypeScript** - Type safety
-- **MongoDB 8.19** - NoSQL database
-- **Mongoose** - MongoDB ODM
+- **Node.js** — JavaScript runtime
+- **Express 5** — Web framework
+- **TypeScript** — Type safety
+- **Mongoose 8** — MongoDB ODM
+- **MongoDB** — NoSQL database
 
 ### APIs & Services
-- **OpenAI API** - GPT & DALL-E integration
-- **Stripe 19.1** - Payment processing
-- **ImageKit** - Image hosting and CDN
-- **JWT** - Authentication tokens
+- **OpenAI SDK** — Used with Gemini 2.0 Flash model for text generation
+- **ImageKit** — AI image generation (`ik-genimg`) + image hosting/CDN
+- **Stripe** — Payment processing & webhooks
+- **Google Auth Library** — Server-side Google OAuth token verification
+- **JWT (jsonwebtoken)** — Authentication tokens
+- **BCrypt** — Password hashing
 
-### Development Tools
-- **TSX** - TypeScript execution
-- **ESLint** - Code linting
-- **Nodemon** - Auto-restart server
-- **Stripe CLI** - Webhook testing
+### Development & Deployment
+- **TSX** — TypeScript execution for dev server
+- **ESLint** — Code linting
+- **Nodemon** — Auto-restart server (available)
+- **Vercel** — Deployment platform (server configured with `vercel.json`)
 
 ---
 
@@ -122,12 +126,13 @@
 Before you begin, ensure you have the following installed:
 
 - **Node.js** (v18 or higher)
-- **npm** or **yarn**
+- **npm**
 - **MongoDB** (local or MongoDB Atlas)
 - **Git**
 
 You'll also need accounts for:
-- [OpenAI API](https://platform.openai.com/)
+- [Google AI Studio](https://aistudio.google.com/) (for Gemini API key)
+- [Google Cloud Console](https://console.cloud.google.com/) (for OAuth 2.0 Client ID)
 - [Stripe](https://stripe.com/)
 - [ImageKit](https://imagekit.io/)
 
@@ -162,13 +167,13 @@ Create `.env` files in both `server` and `client` directories (see [Environment 
 
 ### 5. Start the Development Servers
 
-**Terminal 1 - Backend:**
+**Terminal 1 — Backend:**
 ```bash
 cd server
 npm run dev
 ```
 
-**Terminal 2 - Frontend:**
+**Terminal 2 — Frontend:**
 ```bash
 cd client
 npm run dev
@@ -176,13 +181,13 @@ npm run dev
 
 The application will be available at:
 - **Frontend**: http://localhost:5173
-- **Backend**: http://localhost:3000
+- **Backend**: http://localhost:{PORT}
 
 ---
 
 ## 🔐 Environment Variables
 
-### Server (.env)
+### Server (`server/.env`)
 
 ```env
 # Server Configuration
@@ -195,24 +200,31 @@ MONGODB_URI=your_mongodb_connection_string
 # Authentication
 JWT_SECRET=your_jwt_secret_key
 
-# OpenAI
-OPENAI_API_KEY=your_openai_api_key
+# Gemini API (via OpenAI SDK)
+GEMINI_API_KEY=your_gemini_api_key
 
 # Stripe
 STRIPE_SECRET_KEY=your_stripe_secret_key
+STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
 STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
 
 # ImageKit
 IMAGEKIT_PUBLIC_KEY=your_imagekit_public_key
 IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
 IMAGEKIT_URL_ENDPOINT=your_imagekit_url_endpoint
+
+# Google OAuth
+GOOGLE_CLIENT_ID=your_google_client_id
 ```
 
-### Client (.env)
+### Client (`client/.env.local`)
 
 ```env
 # API Configuration
-VITE_API_URL=http://localhost:3000
+VITE_SERVER_URL=http://localhost:3000
+
+# Google OAuth
+VITE_GOOGLE_CLIENT_ID=your_google_client_id
 ```
 
 ---
@@ -221,29 +233,29 @@ VITE_API_URL=http://localhost:3000
 
 ### Creating an Account
 
-1. Navigate to the login page
-2. Click "Sign Up"
-3. Enter your name, email, and password
-4. Click "Create Account"
+1. Open the app — you'll see the login screen
+2. **Option A**: Click **"Sign Up"**, enter your name, email, and password, then click **"Create Account"**
+3. **Option B**: Click the **"Sign in with Google"** button to sign up instantly with your Google account
+4. You'll receive **20 free credits** to start
 
 ### Starting a Chat
 
-1. Click "New Chat" in the sidebar
-2. Select "Text" or "Image" mode
-3. Type your prompt
+1. Click **"New Chat"** in the sidebar
+2. Type your prompt in the chat box
+3. Toggle between **Text** or **Image** mode
 4. Press Enter or click the send button
 
 ### Purchasing Credits
 
-1. Click on "Credits" in the sidebar
+1. Click on **"Credits"** in the sidebar
 2. Choose a plan (Basic, Pro, or Premium)
 3. Complete the Stripe checkout process
-4. Credits will be automatically added to your account
+4. Credits are automatically added to your account via webhook
 
 ### Community Features
 
-1. When generating images, check "Upload to Community"
-2. Navigate to "Community" to view shared images
+1. When generating images, check **"Upload to Community"**
+2. Navigate to **"Community"** to view shared images
 3. Browse AI-generated content from other users
 
 ---
@@ -275,29 +287,62 @@ Content-Type: application/json
 }
 ```
 
-#### Get User Profile
+#### Get User Data
 ```http
-GET /api/user/profile
-Authorization: Bearer <token>
+GET /api/user/data
+Authorization: <token>
+```
+
+#### Google Sign-In
+```http
+POST /api/user/google
+Content-Type: application/json
+
+{
+  "credential": "google_id_token"
+}
+```
+> Verifies the Google ID token, finds or creates the user, and returns a JWT.
+
+#### Get Published Community Images
+```http
+GET /api/user/published-images
 ```
 
 ### Chat Endpoints
 
 #### Create Chat
 ```http
-POST /api/chat/create
-Authorization: Bearer <token>
+GET /api/chat/create
+Authorization: <token>
+```
+
+#### Get All User Chats
+```http
+GET /api/chat/gets
+Authorization: <token>
+```
+
+#### Get Specific Chat
+```http
+GET /api/chat/get
+Authorization: <token>
 Content-Type: application/json
 
 {
-  "title": "New Chat"
+  "chatId": "chat_id"
 }
 ```
 
-#### Get User Chats
+#### Delete Chat
 ```http
-GET /api/chat
-Authorization: Bearer <token>
+DELETE /api/chat/delete
+Authorization: <token>
+Content-Type: application/json
+
+{
+  "chatId": "chat_id"
+}
 ```
 
 ### Message Endpoints
@@ -305,20 +350,20 @@ Authorization: Bearer <token>
 #### Send Text Message
 ```http
 POST /api/message/text
-Authorization: Bearer <token>
+Authorization: <token>
 Content-Type: application/json
 
 {
   "prompt": "Your question here",
-  "chatId": "chat_id",
-  "isPublished": false
+  "chatId": "chat_id"
 }
 ```
+> Costs **1 credit** per request.
 
 #### Generate Image
 ```http
 POST /api/message/image
-Authorization: Bearer <token>
+Authorization: <token>
 Content-Type: application/json
 
 {
@@ -327,6 +372,7 @@ Content-Type: application/json
   "isPublished": true
 }
 ```
+> Costs **2 credits** per request. Set `isPublished` to `true` to share in the community gallery.
 
 ### Credits Endpoints
 
@@ -338,15 +384,16 @@ GET /api/credits/plans
 #### Purchase Credits
 ```http
 POST /api/credits/purchase
-Authorization: Bearer <token>
+Authorization: <token>
 Content-Type: application/json
 
 {
   "planId": "pro"
 }
 ```
+> Returns a Stripe checkout session URL.
 
-### Webhook Endpoints
+### Webhook Endpoint
 
 #### Stripe Webhook
 ```http
@@ -354,6 +401,7 @@ POST /api/stripe/webhook
 Content-Type: application/json
 Stripe-Signature: <signature>
 ```
+> Handles `payment_intent.succeeded` events to allocate purchased credits.
 
 ---
 
@@ -361,72 +409,75 @@ Stripe-Signature: <signature>
 
 ```
 QuickGPT/
-├── client/                    # Frontend React application
-│   ├── public/               # Static assets
+├── client/                        # Frontend React application
+│   ├── public/
+│   │   └── favicon.svg
 │   ├── src/
-│   │   ├── assets/          # Images, icons, CSS
-│   │   ├── components/      # React components
-│   │   │   ├── ChatBox.tsx
-│   │   │   ├── Message.tsx
-│   │   │   └── Sidebar.tsx
-│   │   ├── context/         # React context
-│   │   │   └── AppContext.tsx
-│   │   ├── pages/           # Page components
-│   │   │   ├── Login.tsx
-│   │   │   ├── Credits.tsx
-│   │   │   ├── Community.tsx
-│   │   │   └── Loading.tsx
-│   │   ├── types/           # TypeScript types
-│   │   ├── App.tsx          # Main app component
-│   │   └── main.tsx         # Entry point
-│   ├── package.json
-│   └── vite.config.ts
+│   │   ├── assets/               # Images, icons, SVGs, CSS
+│   │   │   ├── assets.ts         # Asset exports
+│   │   │   ├── prism.css         # Syntax highlighting theme
+│   │   │   ├── *.svg             # UI icons
+│   │   │   └── *.jpg             # AI sample images
+│   │   ├── components/
+│   │   │   ├── ChatBox.tsx       # Main chat interface
+│   │   │   ├── Message.tsx       # Individual message component
+│   │   │   └── Sidebar.tsx       # Navigation sidebar
+│   │   ├── context/
+│   │   │   └── AppContext.tsx     # Global app state & API calls
+│   │   ├── pages/
+│   │   │   ├── Login.tsx         # Login/Register page (with Google Sign-In)
+│   │   │   ├── Credits.tsx       # Credit purchase page
+│   │   │   ├── Community.tsx     # Community gallery page
+│   │   │   └── Loading.tsx       # Loading screen
+│   │   ├── types/
+│   │   │   └── index.d.ts        # TypeScript type definitions
+│   │   ├── App.tsx               # Main app with routing
+│   │   ├── main.tsx              # Entry point
+│   │   └── index.css             # Global styles
+│   ├── index.html
+│   ├── vite.config.ts
+│   ├── tsconfig.json
+│   ├── tsconfig.app.json
+│   ├── tsconfig.node.json
+│   ├── eslint.config.js
+│   └── package.json
 │
-├── server/                    # Backend Node.js application
+├── server/                        # Backend Node.js application
 │   ├── src/
-│   │   ├── config/          # Configuration files
-│   │   │   └── db.ts        # MongoDB connection
-│   │   ├── controllers/     # Route controllers
-│   │   │   ├── creditsController.ts
-│   │   │   ├── webhooks.ts
-│   │   │   └── testWebhookController.ts
-│   │   ├── middleware/      # Express middleware
-│   │   │   └── auth.ts      # JWT verification
-│   │   ├── models/          # Mongoose models
-│   │   │   ├── userModel.ts
-│   │   │   ├── chatModel.ts
-│   │   │   ├── messageModel.ts
-│   │   │   └── transactionModel.ts
-│   │   ├── routes/          # API routes
+│   │   ├── config/
+│   │   │   ├── db.ts             # MongoDB connection
+│   │   │   ├── imagekit.ts       # ImageKit client setup
+│   │   │   └── openai.ts         # OpenAI SDK client setup
+│   │   ├── controllers/
+│   │   │   ├── userController.ts         # Auth: register, login, profile
+│   │   │   ├── googleAuthController.ts   # Google OAuth authentication
+│   │   │   ├── chatController.ts         # CRUD operations for chats
+│   │   │   ├── messageController.ts      # Text & image message handling
+│   │   │   ├── creditsController.ts      # Plans & Stripe checkout
+│   │   │   └── webhooks.ts           # Stripe webhook handler
+│   │   ├── middleware/
+│   │   │   └── auth.ts           # JWT verification middleware
+│   │   ├── models/
+│   │   │   ├── userModel.ts      # User schema (name, email, password, googleId, credits)
+│   │   │   ├── chatModel.ts      # Chat schema (with embedded messages)
+│   │   │   └── transactionModel.ts   # Payment transaction schema
+│   │   ├── routes/
 │   │   │   ├── userRoutes.ts
 │   │   │   ├── chatRoutes.ts
 │   │   │   ├── messageRoutes.ts
 │   │   │   └── creditsRoutes.ts
-│   │   └── server.ts        # Server entry point
-│   ├── package.json
-│   └── tsconfig.json
+│   │   ├── types/
+│   │   │   └── global.d.ts       # Global type declarations
+│   │   └── server.ts             # Express server entry point
+│   ├── vercel.json               # Vercel deployment config
+│   ├── tsconfig.json
+│   └── package.json
 │
 ├── .gitignore
-└── README.md
+└── ReadMe.md
 ```
 
 ---
-
-<!-- ## 🖼️ Screenshots
-
-### Chat Interface
-![Chat Interface](https://via.placeholder.com/800x400?text=Chat+Interface+Screenshot)
-
-### Image Generation
-![Image Generation](https://via.placeholder.com/800x400?text=Image+Generation+Screenshot)
-
-### Credit Purchase
-![Credit Purchase](https://via.placeholder.com/800x400?text=Credit+Purchase+Screenshot)
-
-### Community Gallery
-![Community Gallery](https://via.placeholder.com/800x400?text=Community+Gallery+Screenshot)
-
---- -->
 
 ## 🤝 Contributing
 
@@ -453,7 +504,6 @@ Contributions are welcome! Please follow these steps:
 - Follow ESLint rules
 - Write meaningful commit messages
 - Add comments for complex logic
-- Test your changes thoroughly
 
 ---
 
@@ -462,6 +512,7 @@ Contributions are welcome! Please follow these steps:
 - Stripe webhooks require ngrok or Stripe CLI for local testing
 - Image generation consumes 2 credits per request
 - Text generation consumes 1 credit per request
+- Image prompts are limited to 1000 characters
 
 ---
 
@@ -473,7 +524,7 @@ Contributions are welcome! Please follow these steps:
 - [ ] Chat export functionality
 - [ ] Advanced image editing features
 - [ ] User profile customization
-- [ ] Social features (likes, comments)
+- [ ] Social features (likes, comments on community images)
 - [ ] Mobile app (React Native)
 
 ---
@@ -490,11 +541,12 @@ Contributions are welcome! Please follow these steps:
 
 ## 🙏 Acknowledgments
 
-- [OpenAI](https://openai.com/) - For GPT and DALL-E APIs
-- [Stripe](https://stripe.com/) - For payment processing
-- [MongoDB](https://www.mongodb.com/) - For database solutions
-- [React](https://reactjs.org/) - For the amazing UI library
-- [TailwindCSS](https://tailwindcss.com/) - For beautiful styling
+- [Google Gemini](https://deepmind.google/technologies/gemini/) — For the Gemini 2.0 Flash AI model
+- [ImageKit](https://imagekit.io/) — For AI image generation and CDN hosting
+- [Stripe](https://stripe.com/) — For payment processing
+- [MongoDB](https://www.mongodb.com/) — For database solutions
+- [React](https://reactjs.org/) — For the UI library
+- [TailwindCSS](https://tailwindcss.com/) — For utility-first styling
 
 ---
 
